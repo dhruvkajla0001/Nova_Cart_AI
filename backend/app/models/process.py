@@ -7,16 +7,30 @@ from app.db.database import Base
 class Process(Base):
     __tablename__ = "processes"
 
+    # ============================================================
+    # PRIMARY KEY
+    # ============================================================
+
     process_id: Mapped[int] = mapped_column(
         BigInteger,
         primary_key=True,
     )
 
+    # ============================================================
+    # VALUE CHAIN
+    # ============================================================
+
     value_chain_id: Mapped[int] = mapped_column(
         BigInteger,
-        ForeignKey("value_chains.value_chain_id"),
+        ForeignKey(
+            "value_chains.value_chain_id"
+        ),
         nullable=False,
     )
+
+    # ============================================================
+    # PROCESS INFORMATION
+    # ============================================================
 
     process_code: Mapped[str] = mapped_column(
         String(50),
@@ -33,11 +47,19 @@ class Process(Base):
         nullable=True,
     )
 
+    # ============================================================
+    # ORDER
+    # ============================================================
+
     sequence_order: Mapped[int] = mapped_column(
         Integer,
         nullable=False,
         default=0,
     )
+
+    # ============================================================
+    # RELATIONSHIPS
+    # ============================================================
 
     value_chain = relationship(
         "ValueChain",

@@ -6,12 +6,16 @@ from app.services.graph_service import GraphService
 
 
 router = APIRouter(
-    prefix="/api/processes",
+    prefix="/api",
     tags=["Processes"],
 )
 
 
-@router.get("/{process_id}")
+# ============================================================
+# PROCESS
+# ============================================================
+
+@router.get("/processes/{process_id}")
 def get_process(
     process_id: int,
     db: Session = Depends(get_db),
@@ -32,26 +36,51 @@ def get_process(
         "process_code": process.process_code,
         "name": process.name,
         "description": process.description,
+        "sequence_order": process.sequence_order,
         "value_chain_id": process.value_chain_id,
     }
 
 
-@router.get("/{process_id}/activities")
+# ============================================================
+# VALUE CHAIN → PROCESSES
+# ============================================================
+
+@router.get(
+    "/value-chains/{value_chain_id}/processes"
+)
+def get_value_chain_processes(
+    value_chain_id: int,
+    db: Session = Depends(get_db),
+):
+    processes = GraphService.get_value_chain_processes(
+        db,
+        value_chain_id,
+    )
+
+    return [
+        {
+            "process_id": process.process_id,
+            "process_code": process.process_code,
+            "name": process.name,
+            "description": process.description,
+            "sequence_order": process.sequence_order,
+            "value_chain_id": process.value_chain_id,
+        }
+        for process in processes
+    ]
+
+
+# ============================================================
+# PROCESS → ACTIVITIES
+# ============================================================
+
+@router.get(
+    "/processes/{process_id}/activities"
+)
 def get_process_activities(
     process_id: int,
     db: Session = Depends(get_db),
 ):
-    process = GraphService.get_process(
-        db,
-        process_id,
-    )
-
-    if process is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Process not found",
-        )
-
     activities = GraphService.get_process_activities(
         db,
         process_id,
@@ -65,27 +94,23 @@ def get_process_activities(
             "description": activity.description,
             "activity_type": activity.activity_type,
             "sequence_order": activity.sequence_order,
+            "process_id": activity.process_id,
         }
         for activity in activities
     ]
 
 
-@router.get("/{process_id}/roles")
+# ============================================================
+# PROCESS → ROLES
+# ============================================================
+
+@router.get(
+    "/processes/{process_id}/roles"
+)
 def get_process_roles(
     process_id: int,
     db: Session = Depends(get_db),
 ):
-    process = GraphService.get_process(
-        db,
-        process_id,
-    )
-
-    if process is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Process not found",
-        )
-
     roles = GraphService.get_process_roles(
         db,
         process_id,
