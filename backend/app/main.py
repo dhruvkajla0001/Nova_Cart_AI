@@ -9,6 +9,7 @@ from app.api.routes.skills import router as skills_router
 from app.api.routes.activities import router as activities_router
 from app.api.routes.graph import router as graph_router
 from app.api.routes.ai_analysis import router as ai_analysis_router
+from app.api.routes.ingestion import router as ingestion_router
 
 
 app = FastAPI(
@@ -48,6 +49,7 @@ app.include_router(skills_router)
 app.include_router(activities_router)
 app.include_router(graph_router)
 app.include_router(ai_analysis_router)
+app.include_router(ingestion_router)
 
 
 # ============================================================

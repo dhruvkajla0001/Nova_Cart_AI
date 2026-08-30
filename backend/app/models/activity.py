@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from sqlalchemy import BigInteger, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -52,4 +54,10 @@ class Activity(Base):
     process = relationship(
         "Process",
         back_populates="activities",
+    )
+
+    ai_opportunities = relationship(
+        "AIOpportunity",
+        back_populates="activity",
+        cascade="all, delete-orphan",
     )
